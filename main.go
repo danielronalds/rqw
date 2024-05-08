@@ -10,65 +10,44 @@ import (
 	"strings"
 	"time"
 
-	"github.com/charmbracelet/huh"
 )
 
-const GET = "GET"
-const POST = "POST"
-const PUT = "PUT"
-const DELETE = "DELETE"
-
 func main() {
-	var url string
-	var method string
-	form := huh.NewForm(
-		huh.NewGroup(
-			huh.NewInput().Title("URL").Value(&url),
-		),
-		huh.NewGroup(
-			huh.NewSelect[string]().Title("Method").Options(
-				huh.NewOption("Get", GET),
-				huh.NewOption("Post", POST),
-				huh.NewOption("Put", PUT),
-				huh.NewOption("Delete", DELETE),
-			).Value(&method),
-		),
-	).WithTheme(huh.ThemeBase())
+    request := runUI()
 
-	form.Run()
+	res := fetchRequest(request)
 
-    res := fetchRequest(url, method)
+	fmt.Println(res.Status)
 
-    fmt.Println(res.Status)
+	body, err := io.ReadAll(res.Body)
+	badlyHandleError(err)
 
-    body, err := io.ReadAll(res.Body)
-    if err != nil {
-        log.Fatalln(err)
-    }
+	var jsonResponse bytes.Buffer
 
-    var jsonResponse bytes.Buffer
+	json.Indent(&jsonResponse, body, "", "  ")
 
-    json.Indent(&jsonResponse, body, "", "  ")
+	prettyJson := strings.ReplaceAll(jsonResponse.String(), "\\", "")
 
-    prettyJson := strings.ReplaceAll(jsonResponse.String(), "\\", "")
-
-    fmt.Println(prettyJson)
+	fmt.Println(prettyJson)
 }
 
-func fetchRequest(url string, method string) *http.Response {
-    var res *http.Response
-    var err error
+func fetchRequest(req request) *http.Response {
+	client := http.Client{Timeout: 10 * time.Second}
 
-    client := http.Client{ Timeout: 10 * time.Second }
+	reqBody := bytes.NewBuffer([]byte(req.body))
 
-    switch method {
-    case GET:
-        res, err = client.Get(url)
-    }
+	httpReq, err := http.NewRequest(req.method, req.url, reqBody)
+	badlyHandleError(err)
 
-    if err != nil {
-        panic(err)
-    }
+	res, err := client.Do(httpReq)
+	badlyHandleError(err)
 
-    return res
+	return res
+}
+
+// Does what it says on the tin, badly handles an error by panicking and printing it
+func badlyHandleError(err error) {
+	if err != nil {
+		log.Fatalln(err)
+	}
 }
