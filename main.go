@@ -19,18 +19,24 @@ func main() {
 
 	fmt.Println(res.Status)
 
+    prettyJson := getPrettyResponseBodyJson(res)
+
+	fmt.Println(prettyJson)
+}
+
+// Parses the given responses body as JSON with nice indenting
+func getPrettyResponseBodyJson(res *http.Response) string {
 	body, err := io.ReadAll(res.Body)
 	badlyHandleError(err)
 
 	var jsonResponse bytes.Buffer
 
-	json.Indent(&jsonResponse, body, "", "  ")
+	json.Indent(&jsonResponse, body, "", "    ")
 
-	prettyJson := strings.ReplaceAll(jsonResponse.String(), "\\", "")
-
-	fmt.Println(prettyJson)
+	return strings.ReplaceAll(jsonResponse.String(), "\\", "") // Removing escaping slashes
 }
 
+// Fetches the users specified request, returning a pointer to the http.Response object
 func fetchRequest(req request) *http.Response {
 	client := http.Client{Timeout: 10 * time.Second}
 

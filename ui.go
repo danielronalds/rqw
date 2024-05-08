@@ -6,26 +6,26 @@ import (
 	"github.com/charmbracelet/huh"
 )
 
+// A struct for representing a user created request
 type request struct {
+    // The target URL of the request
     url string
+    // The method the request should use. This can be trusted as the user doesn't directly input it
     method string
+    // The body of the request. Only populated if the method requires a body (PUT or POST)
     body string
 }
 
-func initialRequest() request {
-    return request{
-    	url:    "",
-    	method: "",
-    	body:   "",
-    }
-}
-
+// Returns whether the request will require a body
 func (r request) requiresBody() bool {
     return r.method == http.MethodPost || r.method == http.MethodPut
 }
 
+// Entry point for running the UI for getting the request the User wants to send
+//
+// Currently implementing using charmbracelets huh, but likely to change to bubble tea
 func runUI() request {
-    req := initialRequest()
+    req := request{}
 
 	form := huh.NewForm(
 		huh.NewGroup(
