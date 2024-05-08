@@ -24,7 +24,7 @@ func (r request) requiresBody() bool {
 // Entry point for running the UI for getting the request the User wants to send
 //
 // Currently implementing using charmbracelets huh, but likely to change to bubble tea
-func runUI() request {
+func runUI() (request, bool) {
     req := request{}
 
 	form := huh.NewForm(
@@ -50,5 +50,18 @@ func runUI() request {
         bodyForm.Run()
 	}
 
-    return req
+    var confirm bool
+
+    confirmationForm := huh.NewForm(
+		huh.NewGroup(
+			huh.NewNote().Title("URL").Description(req.url),
+			huh.NewNote().Title("Method").Description(req.method),
+            huh.NewNote().Title("Body").Description(req.body),
+            huh.NewConfirm().Title("Send Request?").Negative("Don't Send").Value(&confirm).Affirmative("Send"),
+		),
+	).WithTheme(huh.ThemeBase())
+
+    confirmationForm.Run()
+
+    return req, confirm
 }

@@ -7,13 +7,18 @@ import (
 	"io"
 	"log"
 	"net/http"
+	"os"
 	"strings"
 	"time"
-
 )
 
 func main() {
-    request := runUI()
+    request, send := runUI()
+
+    if !send {
+        fmt.Println("Canceled request")
+        os.Exit(0)
+    }
 
 	res := fetchRequest(request)
 
