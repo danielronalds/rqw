@@ -3,6 +3,7 @@ package main
 import (
 	"bytes"
 	"encoding/json"
+	"flag"
 	"fmt"
 	"io"
 	"log"
@@ -13,18 +14,28 @@ import (
 )
 
 func main() {
-    request, send := runUI()
+	req := request{}
+    var send bool
 
-    if !send {
-        fmt.Println("Canceled request")
-        os.Exit(0)
-    }
+	flag.StringVar(&req.url, "url", "", "The url to send to")
+	flag.StringVar(&req.method, "method", "", "The method to send with")
+	flag.StringVar(&req.body, "data", "", "The body of the request")
+	flag.BoolVar(&send, "y", false, "Whether to prompt for confirmation before sending")
 
-	res := fetchRequest(request)
+	flag.Parse()
+
+	req, send = runUI(req, send)
+
+	if !send {
+		fmt.Println("Canceled request")
+		os.Exit(0)
+	}
+
+	res := fetchRequest(req)
 
 	fmt.Println(res.Status)
 
-    prettyJson := getPrettyResponseBodyJson(res)
+	prettyJson := getPrettyResponseBodyJson(res)
 
 	fmt.Println(prettyJson)
 }
