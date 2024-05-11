@@ -12,7 +12,7 @@ import (
 
 func main() {
 	req := rqwlib.Request{}
-    var send bool
+	var send bool
 
 	flag.StringVar(&req.Url, "url", "", "The url to send to")
 	flag.StringVar(&req.Method, "method", "", "The method to send with")
@@ -21,7 +21,7 @@ func main() {
 
 	flag.Parse()
 
-    req, send = rqwui.RunUI(req, send)
+	req, send = rqwui.RunUI(req, send)
 
 	if !send {
 		fmt.Println("Canceled request")
@@ -29,12 +29,12 @@ func main() {
 	}
 
 	res, err := req.FetchResponse()
-    badlyHandleError(err)
+	badlyHandleError(err)
 
 	fmt.Println(res.Status)
 
 	prettyJson, err := rqwlib.GetPrettyResBodyJson(res)
-    badlyHandleError(err)
+	badlyHandleError(err)
 
 	fmt.Println(prettyJson)
 }
