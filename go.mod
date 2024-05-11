@@ -2,10 +2,7 @@ module github.com/danielronalds/rqw
 
 go 1.22.2
 
-require (
-	github.com/charmbracelet/huh v0.3.0
-	github.com/charmbracelet/huh/spinner v0.0.0-20240504191910-dadcb82cc482
-)
+require github.com/charmbracelet/huh v0.3.0
 
 require (
 	github.com/atotto/clipboard v0.1.4 // indirect
