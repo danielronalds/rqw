@@ -28,12 +28,12 @@ func main() {
 		os.Exit(0)
 	}
 
-	res, err := rqwlib.FetchRequest(req)
+	res, err := req.FetchResponse()
     badlyHandleError(err)
 
 	fmt.Println(res.Status)
 
-	prettyJson, err := rqwlib.GetPrettyResponseBodyJson(res)
+	prettyJson, err := rqwlib.GetPrettyResBodyJson(res)
     badlyHandleError(err)
 
 	fmt.Println(prettyJson)

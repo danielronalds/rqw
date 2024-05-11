@@ -41,12 +41,12 @@ func (r Request) RequiresBody() bool {
 }
 
 // Fetches the users specified request, returning a pointer to the http.Response object
-func FetchRequest(req Request) (*http.Response, error) {
+func (r Request) FetchResponse() (*http.Response, error) {
 	client := http.Client{Timeout: 10 * time.Second}
 
-	reqBody := bytes.NewBuffer([]byte(req.Body))
+	reqBody := bytes.NewBuffer([]byte(r.Body))
 
-	httpReq, err := http.NewRequest(req.Method, req.Url, reqBody)
+	httpReq, err := http.NewRequest(r.Method, r.Url, reqBody)
     if err != nil {
         return nil, err
     }
@@ -60,7 +60,7 @@ func FetchRequest(req Request) (*http.Response, error) {
 }
 
 // Parses the given responses body as JSON with nice indenting
-func GetPrettyResponseBodyJson(res *http.Response) (string, error) {
+func GetPrettyResBodyJson(res *http.Response) (string, error) {
 	body, err := io.ReadAll(res.Body)
 	if err != nil {
         return "", err
